@@ -28,14 +28,17 @@ from lm import OpenAIModel
 from rm import YouRM, BingSearch
 from storm_wiki.engine import STORMWikiRunnerArguments, STORMWikiRunner, STORMWikiLMConfigs
 from utils import load_api_key
-
+from dotenv import load_dotenv
+load_dotenv()
+apikey = os.getenv('OPENAI_API_KEY_storm')
 
 def main(args):
-    load_api_key(toml_file_path='secrets.toml')
+    print(args)
+    # load_api_key(toml_file_path='secrets.toml')
     lm_configs = STORMWikiLMConfigs()
     openai_kwargs = {
-        'api_key': os.getenv("OPENAI_API_KEY"),
-        'api_provider': os.getenv('OPENAI_API_TYPE'),
+        'api_key': os.getenv('OPENAI_API_KEY_storm'), #"",
+        'api_provider': "openai",
         'temperature': 1.0,
         'top_p': 0.9,
         'api_base': os.getenv('AZURE_API_BASE'),
@@ -70,7 +73,7 @@ def main(args):
     # STORM is a knowledge curation system which consumes information from the retrieval module.
     # Currently, the information source is the Internet and we use search engine API as the retrieval module.
     if args.retriever == 'bing':
-        rm = BingSearch(bing_search_api=os.getenv('BING_SEARCH_API_KEY'), k=engine_args.search_top_k)
+        rm = BingSearch(bing_search_api=os.getenv('BING_SEARCH_API_KEY_storm'), k=engine_args.search_top_k)
     elif args.retriever == 'you':
         rm = YouRM(ydc_api_key=os.getenv('YDC_API_KEY'), k=engine_args.search_top_k)
 
@@ -97,16 +100,16 @@ if __name__ == '__main__':
                         help='Maximum number of threads to use. The information seeking part and the article generation'
                              'part can speed up by using multiple threads. Consider reducing it if keep getting '
                              '"Exceed rate limit" error when calling LM API.')
-    parser.add_argument('--retriever', type=str, choices=['bing', 'you'],
-                        help='The search engine API to use for retrieving information.')
+    parser.add_argument('--retriever', type=str, choices=['bing', 'you'], default='bing',
+                        help='The search engine API to use for retrieving information.(default: %(default)s).')
     # stage of the pipeline
-    parser.add_argument('--do-research', action='store_true',
+    parser.add_argument('--do-research', action='store_false',
                         help='If True, simulate conversation to research the topic; otherwise, load the results.')
-    parser.add_argument('--do-generate-outline', action='store_true',
+    parser.add_argument('--do-generate-outline', action='store_false',
                         help='If True, generate an outline for the topic; otherwise, load the results.')
-    parser.add_argument('--do-generate-article', action='store_true',
+    parser.add_argument('--do-generate-article', action='store_false',
                         help='If True, generate an article for the topic; otherwise, load the results.')
-    parser.add_argument('--do-polish-article', action='store_true',
+    parser.add_argument('--do-polish-article', action='store_false',
                         help='If True, polish the article by adding a summarization section and (optionally) removing '
                              'duplicate content.')
     # hyperparameters for the pre-writing stage
@@ -119,7 +122,7 @@ if __name__ == '__main__':
     # hyperparameters for the writing stage
     parser.add_argument('--retrieve-top-k', type=int, default=3,
                         help='Top k collected references for each section title.')
-    parser.add_argument('--remove-duplicate', action='store_true',
+    parser.add_argument('--remove-duplicate', action='store_false',
                         help='If True, remove duplicate content from the article.')
 
     main(parser.parse_args())
