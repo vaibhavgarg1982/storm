@@ -35,17 +35,18 @@ from storm_wiki.engine import STORMWikiRunnerArguments, STORMWikiRunner, STORMWi
 from rm import VectorRM
 from lm import OpenAIModel
 from utils import load_api_key
-
+from dotenv import load_dotenv
+load_dotenv()
 
 def main(args):
     # Load API key from the specified toml file path
-    load_api_key(toml_file_path='secrets.toml')
+    # load_api_key(toml_file_path='secrets.toml')
 
     # Initialize the language model configurations
     engine_lm_configs = STORMWikiLMConfigs()
     openai_kwargs = {
-        'api_key': os.getenv("OPENAI_API_KEY"),
-        'api_provider': os.getenv('OPENAI_API_TYPE'),
+        'api_key': os.getenv("OPENAI_API_KEY_storm"),
+        'api_provider': "openai",
         'temperature': 1.0,
         'top_p': 0.9,
     }
@@ -124,11 +125,11 @@ if __name__ == "__main__":
     # provide local corpus and set up vector db
     parser.add_argument('--collection-name', type=str, default="my_documents",
                         help='The collection name for vector store.')
-    parser.add_argument('--device', type=str, default="mps",
+    parser.add_argument('--device', type=str, default="cpu",
                         help='The device used to run the retrieval model (mps, cuda, cpu, etc).')
-    parser.add_argument('--vector-db-mode', type=str, choices=['offline', 'online'],
+    parser.add_argument('--vector-db-mode', type=str, choices=['offline', 'online'], default='offline',
                         help='The mode of the Qdrant vector store (offline or online).')
-    parser.add_argument('--offline-vector-db-dir', type=str, default='./vector_store',
+    parser.add_argument('--offline-vector-db-dir', type=str, default='./vector_store/vector_store',
                         help='If use offline mode, please provide the directory to store the vector store.')
     parser.add_argument('--online-vector-db-url', type=str,
                         help='If use online mode, please provide the url of the Qdrant server.')
