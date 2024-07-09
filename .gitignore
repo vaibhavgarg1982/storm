@@ -27,3 +27,6 @@ vector_store.zip
 vector_store/vector_store/.lock
 vector_store/vector_store/collection/my_documents/storage.sqlite
 vector_store/vector_store/meta.json
+archive.zip
+arxiv_data_210930-054931.csv
+preped.csv
