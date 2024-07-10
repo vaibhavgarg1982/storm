@@ -49,7 +49,7 @@ def trace(frame, event, arg):
 def main(args):
     # Load API key from the specified toml file path
     # load_api_key(toml_file_path='secrets.toml')
-
+    print(args)
     # Initialize the language model configurations
     engine_lm_configs = STORMWikiLMConfigs()
     openai_kwargs = {
@@ -109,7 +109,9 @@ def main(args):
     runner = STORMWikiRunner(engine_args, engine_lm_configs, rm)
 
     # run the pipeline
-    topic = input('Topic: ')
+    topic = args.topic
+    if topic is None:
+        topic = input('Topic: ')
     runner.run(
         topic=topic,
         do_research=args.do_research,
@@ -171,5 +173,10 @@ if __name__ == "__main__":
                         help='Top k collected references for each section title.')
     parser.add_argument('--remove-duplicate', action='store_true',
                         help='If True, remove duplicate content from the article.')
+    # add topic
+    parser.add_argument('--topic', type=str, default=None,
+                        help='The topic of the article to be generated.')
+    
+    sys.settrace(trace)
     main(parser.parse_args())
     sys.settrace(None)
