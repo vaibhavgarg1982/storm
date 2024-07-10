@@ -38,6 +38,14 @@ from utils import load_api_key
 from dotenv import load_dotenv
 load_dotenv()
 
+def trace(frame, event, arg):
+    if event == "call":
+        filename = frame.f_code.co_filename
+        if filename.startswith("D:"):
+            print(f"{frame.f_code.co_filename}:{frame.f_lineno} {frame.f_code.co_name}")
+
+    return trace
+
 def main(args):
     # Load API key from the specified toml file path
     # load_api_key(toml_file_path='secrets.toml')
@@ -164,3 +172,4 @@ if __name__ == "__main__":
     parser.add_argument('--remove-duplicate', action='store_true',
                         help='If True, remove duplicate content from the article.')
     main(parser.parse_args())
+    sys.settrace(None)
