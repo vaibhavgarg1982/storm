@@ -83,7 +83,7 @@ Below, we provide a quick start guide to run STORM locally.
 
 **To run STORM with `gpt` family models with default configurations**: Make sure you have set up the OpenAI API key and run the following command.
 
-```
+```shell
 python examples/run_storm_wiki_gpt.py \
     --output-dir $OUTPUT_DIR \
     --retriever you \
